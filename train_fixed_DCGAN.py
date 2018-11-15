@@ -2,7 +2,9 @@ import argparse
 from models.fixed_GAN import fixed_DCGAN
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-d', '--default', action='store_true', help='Using default training strategy.')
+parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
+parser.add_argument('-p', '--ckeckpoint', action='store_true', help='Continue training from ckeckpoint.')
+parser.add_argument('--ckp_route', type=str, help='Route of checkpoint file.')
 parser.add_argument('-c', '--cpu', action='store_false', help='Using CPU for training. (Not recommend)')
 parser.add_argument('--dataset', type=str, default='LSUN', help='Name of dataset. Default: LSUN')
 parser.add_argument('--classes', type=str, default='church_outdoor_train', help='Which classes of LSUN to use. Default: church_outdoor_train')
@@ -30,7 +32,13 @@ opt = parser.parse_args()
 if __name__ == '__main__':
     if opt.default:
         net = fixed_DCGAN()
-        net.train_from_zero()
+        net.train()
+    elif opt.checkpoint:
+        net = fixed_DCGAN(opt.cpu)
+        net.train(ckp_route=opt.ckp_route, 
+                  num_epochs=opt.epoch, show_every=opt.show_every, threshold_D=opt.threshold_D,
+                  lr_decay_every=opt.lr_decay_every, G_decay=opt.G_decay, D_decay=opt.D_decay,
+                  model_route=opt.model_route, figure_route=opt.figure_route)
     else:
         net = fixed_DCGAN(opt.cpu)
         net.get_dataset(dset_name=opt.dataset, classes=[opt.classes])
@@ -38,6 +46,6 @@ if __name__ == '__main__':
         net.get_G_optimizer(optim_name=opt.optim_G, lr=opt.lr_G, betas=(opt.beta1_G, opt.beta2_G))
         net.get_D_optimizer(optim_name=opt.optim_D, lr=opt.lr_D, betas=(opt.beta1_D, opt.beta2_D))
         net.get_loss(loss_name=opt.loss, soft_label=opt.hard_label)
-        net.train_from_zero(num_epochs=opt.epoch, show_every=opt.show_every, threshold_D=opt.threshold_D,
-                        lr_decay_every=opt.lr_decay_every, G_decay=opt.G_decay, D_decay=opt.D_decay,
-                        model_route=opt.model_route, figure_route=opt.figure_route)
+        net.train(num_epochs=opt.epoch, show_every=opt.show_every, threshold_D=opt.threshold_D,
+                  lr_decay_every=opt.lr_decay_every, G_decay=opt.G_decay, D_decay=opt.D_decay,
+                  model_route=opt.model_route, figure_route=opt.figure_route)
