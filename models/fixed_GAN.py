@@ -203,9 +203,9 @@ class fixed_DCGAN():
         d_loss = self.iter_D(real_data, fake_images.clone().detach(), th=threshold_D)
 
         # train G with new input
-        g_loss_2 = self.iter_G()
+        g_loss = self.iter_G()
 
-        return d_loss, g_loss_1, g_loss_2, fake_images
+        return d_loss, g_loss, fake_images
 
     def save_ckeckpoint(self, iter_count, epoch):
         checkpoint = {
@@ -262,10 +262,9 @@ class fixed_DCGAN():
                 if len(x) != self.batch_size:
                     continue
 
-                d_error, g_error_1, g_error_2, fake_images = self.iter_GAN(x, threshold_D=threshold_D)
+                d_error, g_error, fake_images = self.iter_GAN(x, threshold_D=threshold_D)
                 d_loss.append(d_error)
-                g_loss.append(g_error_1)
-                g_loss.append(g_error_2)
+                g_loss.append(g_error)
 
                 if iter_count % show_every == 1:
                     imgs_numpy = gutils.deprocess_img(fake_images.detach()).cpu().numpy()
@@ -300,10 +299,9 @@ class fixed_DCGAN():
                 if len(x) != self.batch_size:
                     continue
 
-                d_error, g_error_1, g_error_2, fake_images = self.iter_GAN(x, threshold_D=threshold_D)
+                d_error, g_error, fake_images = self.iter_GAN(x, threshold_D=threshold_D)
                 d_loss.append(d_error)
-                g_loss.append(g_error_1)
-                g_loss.append(g_error_2)
+                g_loss.append(g_error)
 
                 if iter_count % show_every == 1:
                     imgs_numpy = gutils.deprocess_img(fake_images.detach()).cpu().numpy()
