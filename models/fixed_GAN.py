@@ -56,25 +56,6 @@ class fixed_DCGAN():
         self.isinit = False
 
 
-    def load_model(self, ckp_route):
-        ckp = torch.load(ckp_route)
-        self.dset_name = ckp['dset_name']
-        self.classes = ckp['classes']
-        self.G_optim = ckp['G_optim']
-        self.D_optim = ckp['D_optim']
-        self.ckp_iter = ckp['iter_count']
-        self.ckp_epoch = ckp['epoch']
-        self.G.load_state_dict(ckp['G_state_dict'])
-        self.D.load_state_dict(ckp['D_state_dict'])
-        self.get_G_optimizer(optim_name=self.G_optim)
-        self.G_solver.load_state_dict(ckp['G_solver_state_dict'])
-        self.get_D_optimizer(optim_name=self.D_optim)
-        self.D_solver.load_state_dict(ckp['D_solver_state_dict'])
-        self.get_dataset(dset_name=self.dset_name, classes=[self.classes])
-        self.get_dataloader(ckp['batch_size'])
-        self.get_loss(loss_name=ckp['loss_name'], soft_label=ckp['soft_label'])
-
-
     def get_dataset(self, dset_name='LSUN', classes=['church_outdoor_train']):
         '''
         Set dataset, default LSUN church_outdoor_train, need download first.
@@ -226,20 +207,33 @@ class fixed_DCGAN():
         checkpoint = {
                       'iter_count': iter_count,
                       'epoch': epoch,
-                      'dset_name': self.dset_name,
-                      'classes': self.classes,
-                      'G_optim': self.G_optim,
-                      'D_optim': self.D_optim,
-                      'batch_size': self.batch_size,
-                      'loss_name': self.loss_name,
-                      'soft_label': self.soft_label,
                       'G_state_dict': self.G.state_dict(),
                       'D_state_dict': self.D.state_dict(),
+                      'G_optim': self.G_optim,
+                      'D_optim': self.D_optim,
                       'G_solver_state_dict': self.G_solver.state_dict(),
-                      'D_solver_state_dict': self.D_solver.state_dict()
+                      'D_solver_state_dict': self.D_solver.state_dict(),
+                      'dset_name': self.dset_name,
+                      'classes': self.classes,
+                      'batch_size': self.batch_size,
+                      'loss_name': self.loss_name,
+                      'soft_label': self.soft_label
                      }
         torch.save(checkpoint, model_route + 'fixed_DCGAN_ckp_' + str(epoch) + '.pth')
 
+    def load_model(self, ckp_route):
+        ckp = torch.load(ckp_route)
+        self.ckp_iter = ckp['iter_count']
+        self.ckp_epoch = ckp['epoch']
+        self.G.load_state_dict(ckp['G_state_dict'])
+        self.D.load_state_dict(ckp['D_state_dict'])
+        self.get_G_optimizer(optim_name=ckp['G_optim'])
+        self.G_solver.load_state_dict(ckp['G_solver_state_dict'])
+        self.get_D_optimizer(optim_name=kp['D_optim'])
+        self.D_solver.load_state_dict(ckp['D_solver_state_dict'])
+        self.get_dataset(dset_name=ckp['dset_name'], classes=[ckp['classes']])
+        self.get_dataloader(ckp['batch_size'])
+        self.get_loss(loss_name=ckp['loss_name'], soft_label=ckp['soft_label'])
 
     def _check_route(self, model_route, figure_route):
 
