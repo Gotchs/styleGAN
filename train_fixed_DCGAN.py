@@ -3,8 +3,7 @@ from models.fixed_GAN import fixed_DCGAN
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
-parser.add_argument('-p', '--ckeckpoint', action='store_true', help='Continue training from ckeckpoint.')
-parser.add_argument('--ckp_route', type=str, help='Route of checkpoint file.')
+parser.add_argument('-p', '--ckp_route', type=str, defalut=None, help='Route of checkpoint file.')
 parser.add_argument('-c', '--cpu', action='store_false', help='Using CPU for training. (Not recommend)')
 parser.add_argument('--dataset', type=str, default='LSUN', help='Name of dataset. Default: LSUN')
 parser.add_argument('--classes', type=str, default='church_outdoor_train', help='Which classes of LSUN to use. Default: church_outdoor_train')
@@ -33,7 +32,7 @@ if __name__ == '__main__':
     if opt.default:
         net = fixed_DCGAN()
         net.train()
-    elif opt.checkpoint:
+    elif opt.ckp_route is not None:
         net = fixed_DCGAN(opt.cpu)
         net.train(ckp_route=opt.ckp_route, 
                   num_epochs=opt.epoch, show_every=opt.show_every, threshold_D=opt.threshold_D,
