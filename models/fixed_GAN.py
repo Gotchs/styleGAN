@@ -24,16 +24,14 @@ class fixed_DCGAN():
         else:
             self.type = torch.FloatTensor
             print('WARNING! GPU not used or not available, model set to CPU!')
-        
-        # get G and D networks
-        self.G = fnet.dc_Gen_R_BN().type(self.type)
-        self.D = fnet.dc_Dis_LR_BN().type(self.type)
 
         # constants
         self.image_size = 64
         self.noise_dim = 100
         
         # placeholder
+        self.G = None
+        self.D = None
         self.dataset = None
         self.dataloader = None
         self.batch_size = None
@@ -45,6 +43,7 @@ class fixed_DCGAN():
         self.ckp_epoch = 0
 
         # information
+        self.norm = None
         self.dset_name = None
         self.classes = None
         self.G_optim = None
@@ -55,13 +54,28 @@ class fixed_DCGAN():
         # flags
         self.isinit = False
 
+    def get_networks(self, norm='batch'):
+        '''
+        Set generator and discriminator, default DCGAN with batchnorm
+        '''
+        if norm == 'batch':
+            self.G = fnet.dc_Gen_R_BN().type(self.type)
+            self.D = fnet.dc_Dis_LR_BN().type(self.type)
+        elif norm == 'instance':
+            self.G = fnet.dc_Gen_IN_R().type(self.type)
+            self.D = fnet.dc_Dis_IN_LR().type(self.type)
+        else:
+            raise NotImplementedError('Normalization [%s] is not implemented' % norm)
+        self.norm = norm
+
 
     def get_dataset(self, dset_name='LSUN', classes=['church_outdoor_train']):
         '''
         Set dataset, default LSUN church_outdoor_train, need download first.
         '''
         if dset_name == 'LSUN':
-            self.dataset = dset.LSUN('./datasets/LSUN', classes=classes, transform=gutils.rescale_training_set(self.image_size))
+            self.dataset = dset.LSUN('./datasets/LSUN', classes=classes, 
+                                     transform=gutils.rescale_training_set(self.image_size))
         else:
             raise NotImplementedError('Dataset [%s] is not implemented' % dset_name)
         self.dset_name = dset_name
@@ -116,6 +130,13 @@ class fixed_DCGAN():
         Check implementation of modules, if not implemented, use default.
         '''
 
+        # test networks
+        if self.norm == None:
+            self.get_networks():
+            print('Using default networks. DCGAN with batch normalization.')
+        else:
+            print('Using self-defined or checkpoint networks.')
+
         # test dataset
         if self.dataset == None:
             self.get_dataset()
@@ -144,7 +165,7 @@ class fixed_DCGAN():
             print('Using self-defined or checkpoint discriminator optimizer.')
 
         # test loss
-        if self.G_loss == None or self.D_loss == None:
+        if self.loss_name == None:
             self.get_loss()
             print('Using default loss. LSGAN with soft label.')
         else:
@@ -207,6 +228,7 @@ class fixed_DCGAN():
         checkpoint = {
                       'iter_count': iter_count,
                       'epoch': epoch,
+                      'norm': self.norm,
                       'G_state_dict': self.G.state_dict(),
                       'D_state_dict': self.D.state_dict(),
                       'G_optim': self.G_optim,
@@ -221,19 +243,27 @@ class fixed_DCGAN():
                      }
         torch.save(checkpoint, model_route + 'fixed_DCGAN_ckp_' + str(epoch) + '.pth')
 
+
     def load_model(self, ckp_route):
+        
         ckp = torch.load(ckp_route)
+        
         self.ckp_iter = ckp['iter_count']
         self.ckp_epoch = ckp['epoch']
+        
+        self.get_networks(norm=ckp['norm'])
         self.G.load_state_dict(ckp['G_state_dict'])
         self.D.load_state_dict(ckp['D_state_dict'])
+        
         self.get_G_optimizer(optim_name=ckp['G_optim'])
+        self.get_D_optimizer(optim_name=ckp['D_optim'])
         self.G_solver.load_state_dict(ckp['G_solver_state_dict'])
-        self.get_D_optimizer(optim_name=kp['D_optim'])
         self.D_solver.load_state_dict(ckp['D_solver_state_dict'])
+        
         self.get_dataset(dset_name=ckp['dset_name'], classes=[ckp['classes']])
         self.get_dataloader(ckp['batch_size'])
         self.get_loss(loss_name=ckp['loss_name'], soft_label=ckp['soft_label'])
+
 
     def _check_route(self, model_route, figure_route):
 
@@ -264,12 +294,13 @@ class fixed_DCGAN():
         
         model_route, figure_route = self._check_route(model_route, figure_route)
         
-        # load checkpoint
+        # load checkpoint if given route, else train from zero
         if ckp_route is not None:
             print('Continue training from checkpoint ' + ckp_route)
             self.load_model(ckp_route)
             print('Ckeckpoint loaded successfully.')
 
+        # check settings, use default is something is not set
         if not self.isinit:
             self.initialize()
         else:
