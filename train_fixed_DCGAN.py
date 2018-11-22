@@ -3,7 +3,7 @@ from models.fixed_GAN import fixed_DCGAN
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
-parser.add_argument('-p', '--ckp_route', type=str, defalut=None, help='Route of checkpoint file.')
+parser.add_argument('-p', '--ckp_route', type=str, default=None, help='Route of checkpoint file.')
 parser.add_argument('-c', '--cpu', action='store_false', help='Using CPU for training. (Not recommend)')
 parser.add_argument('--norm', type=str, default='batch', help='Normalization method to use. Default: batch')
 parser.add_argument('--dataset', type=str, default='LSUN', help='Name of dataset. Default: LSUN')

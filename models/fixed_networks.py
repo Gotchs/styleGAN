@@ -62,7 +62,7 @@ def dc_Gen_IN_R():
     '''
     return nn.Sequential(
         nn.Linear(100, 1024 * 4 * 4),
-        nn.InstanceNorm1d(1024 * 4 * 4),
+        nn.BatchNorm1d(1024 * 4 * 4),
         nn.ReLU(inplace=True),
         mutils.Unflatten(-1, 1024, 4, 4),
         nn.ConvTranspose2d(in_channels=1024, out_channels=512, kernel_size=5, stride=2, padding=2, output_padding=1),

@@ -133,7 +133,7 @@ class fixed_DCGAN():
 
         # test networks
         if self.norm == None:
-            self.get_networks():
+            self.get_networks()
             print('Using default networks. DCGAN with batch normalization.')
         else:
             print('Using self-defined or checkpoint networks.')
