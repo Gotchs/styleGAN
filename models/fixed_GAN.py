@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 import torchvision.datasets as dset
 
 import os
+import json
 
 from . import fixed_networks as fnet
 from .losses import G_Label_Loss, D_Label_Loss
@@ -224,7 +225,18 @@ class fixed_DCGAN():
         return d_loss, g_loss, fake_images
 
 
-    def save_ckeckpoint(self, iter_count, epoch):
+    def save_loss(self, d_loss, g_loss, epoch, model_route):
+        route_d = model_route + 'd_loss_' + str(epoch) + '.txt'
+        route_g = model_route + 'g_loss_' + str(epoch) + '.txt'
+        os.mknod(route_d)
+        os.mknod(route_g)
+        with open(route_d, 'w') as fp:
+            fp.write(json.dumps(d_loss))
+        with open(route_g, 'w') as fp:
+            fp.write(json.dumps(g_loss))
+
+
+    def save_ckeckpoint(self, iter_count, epoch, model_route):
         checkpoint = {
                       'iter_count': iter_count,
                       'epoch': epoch,
@@ -300,7 +312,7 @@ class fixed_DCGAN():
             self.load_model(ckp_route)
             print('Ckeckpoint loaded successfully.')
 
-        # check settings, use default is something is not set
+        # check settings, use default if something is not set
         if not self.isinit:
             self.initialize()
         else:
@@ -333,5 +345,6 @@ class fixed_DCGAN():
 
                 iter_count += 1
 
-            # save model per epoch
-            self.save_ckeckpoint(iter_count - 1, epoch + 1)
+            # save model and loss per epoch
+            self.save_ckeckpoint(iter_count - 1, epoch + 1, model_route)
+            self.save_loss(d_loss, g_loss, epoch + 1, model_route)
