@@ -1,11 +1,11 @@
 import argparse
-from models.fixed_GAN import fixed_DCGAN
+from models.fixed_GANs import fixed_DCGAN
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
 parser.add_argument('-p', '--ckp_route', type=str, default=None, help='Route of checkpoint file.')
 parser.add_argument('-c', '--cpu', action='store_false', help='Using CPU for training. (Not recommend)')
-parser.add_argument('--norm', type=str, default='batch', help='Normalization method to use. Default: batch')
+parser.add_argument('--net_type', type=str, default='BN_R', help='Net type to use. Default: BN_R')
 parser.add_argument('--dataset', type=str, default='LSUN', help='Name of dataset. Default: LSUN')
 parser.add_argument('--classes', type=str, default='church_outdoor_train', help='Which classes of LSUN to use. Default: church_outdoor_train')
 parser.add_argument('--batch_size', type=int, default=128, help='Size of minibatch. Default: 128')
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                   model_route=opt.model_route, figure_route=opt.figure_route)
     else:
         net = fixed_DCGAN(opt.cpu)
-        net.get_networks(norm=opt.norm)
+        net.get_networks(net_type=opt.net_type)
         net.get_dataset(dset_name=opt.dataset, classes=[opt.classes])
         net.get_dataloader(batch_size=opt.batch_size)
         net.get_G_optimizer(optim_name=opt.optim_G, lr=opt.lr_G, betas=(opt.beta1_G, opt.beta2_G))
