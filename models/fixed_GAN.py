@@ -65,6 +65,9 @@ class fixed_DCGAN():
         elif norm == 'instance':
             self.G = fnet.dc_Gen_IN_R().type(self.type)
             self.D = fnet.dc_Dis_IN_LR().type(self.type)
+        elif norm == 'BN_R':
+            self.G = fnet.dc_Gen_BN_R().type(self.type)
+            self.D = fnet.dc_Dis_BN_LR().type(self.type)
         else:
             raise NotImplementedError('Normalization [%s] is not implemented' % norm)
         self.norm = norm
