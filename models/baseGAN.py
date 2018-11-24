@@ -6,7 +6,6 @@ import torchvision.datasets as dset
 import os
 import json
 
-from . import fixed_networks as fnet
 from .losses import G_Label_Loss, D_Label_Loss
 import utils.gan_utils as gutils
 import utils.vis_utils as vutils
@@ -15,9 +14,9 @@ import utils.vis_utils as vutils
 # classes
 ##############
 
-class fixed_DCGAN():
+class BaseGAN():
 
-    def __init__(self, useGPU=True):
+    def __init__(self, useGPU=True, image_size, noise_dim):
 
         # set model to GPU or CPU, default GPU
         if useGPU and torch.cuda.is_available():
@@ -27,8 +26,8 @@ class fixed_DCGAN():
             print('WARNING! GPU not used or not available, model set to CPU!')
 
         # constants
-        self.image_size = 64
-        self.noise_dim = 100
+        self.image_size = image_size
+        self.noise_dim = noise_dim
         
         # placeholder
         self.G = None
@@ -44,7 +43,7 @@ class fixed_DCGAN():
         self.ckp_epoch = 0
 
         # information
-        self.norm = None
+        self.net_type = None
         self.dset_name = None
         self.classes = None
         self.G_optim = None
@@ -55,19 +54,8 @@ class fixed_DCGAN():
         # flags
         self.isinit = False
 
-    def get_networks(self, norm='batch'):
-        '''
-        Set generator and discriminator, default DCGAN with batchnorm
-        '''
-        if norm == 'batch':
-            self.G = fnet.dc_Gen_R_BN().type(self.type)
-            self.D = fnet.dc_Dis_LR_BN().type(self.type)
-        elif norm == 'instance':
-            self.G = fnet.dc_Gen_IN_R().type(self.type)
-            self.D = fnet.dc_Dis_IN_LR().type(self.type)
-        else:
-            raise NotImplementedError('Normalization [%s] is not implemented' % norm)
-        self.norm = norm
+    def get_networks(self):
+        pass
 
 
     def get_dataset(self, dset_name='LSUN', classes=['church_outdoor_train']):
@@ -132,9 +120,9 @@ class fixed_DCGAN():
         '''
 
         # test networks
-        if self.norm == None:
+        if self.net_type == None:
             self.get_networks()
-            print('Using default networks. DCGAN with batch normalization.')
+            print('Using default networks.')
         else:
             print('Using self-defined or checkpoint networks.')
 
@@ -240,7 +228,7 @@ class fixed_DCGAN():
         checkpoint = {
                       'iter_count': iter_count,
                       'epoch': epoch,
-                      'norm': self.norm,
+                      'net_type': self.net_type,
                       'G_state_dict': self.G.state_dict(),
                       'D_state_dict': self.D.state_dict(),
                       'G_optim': self.G_optim,
@@ -253,7 +241,7 @@ class fixed_DCGAN():
                       'loss_name': self.loss_name,
                       'soft_label': self.soft_label
                      }
-        torch.save(checkpoint, model_route + 'fixed_DCGAN_ckp_' + str(epoch) + '.pth')
+        torch.save(checkpoint, model_route + 'ckp_epoch_' + str(epoch) + '.pth')
 
 
     def load_model(self, ckp_route):
@@ -263,7 +251,7 @@ class fixed_DCGAN():
         self.ckp_iter = ckp['iter_count']
         self.ckp_epoch = ckp['epoch']
         
-        self.get_networks(norm=ckp['norm'])
+        self.get_networks(net_type=ckp['net_type'])
         self.G.load_state_dict(ckp['G_state_dict'])
         self.D.load_state_dict(ckp['D_state_dict'])
         

@@ -5,6 +5,55 @@ import utils.module_utils as mutils
 # functions
 #############
 
+def dc_Gen_BN_R():
+    '''
+    Fixed implementation of DCGAN generator
+    Relu before Batchnorm
+    Structure reference: https://arxiv.org/abs/1511.06434
+    '''
+    return nn.Sequential(
+        nn.Linear(100, 1024 * 4 * 4),
+        nn.BatchNorm1d(1024 * 4 * 4),
+        nn.ReLU(inplace=True),
+        mutils.Unflatten(-1, 1024, 4, 4),
+        nn.ConvTranspose2d(in_channels=1024, out_channels=512, kernel_size=5, stride=2, padding=2, output_padding=1),
+        nn.BatchNorm2d(512),
+        nn.ReLU(inplace=True),
+        nn.ConvTranspose2d(in_channels=512, out_channels=256, kernel_size=5, stride=2, padding=2, output_padding=1),
+        nn.BatchNorm2d(256),
+        nn.ReLU(inplace=True),
+        nn.ConvTranspose2d(in_channels=256, out_channels=128, kernel_size=5, stride=2, padding=2, output_padding=1),
+        nn.BatchNorm2d(128),
+        nn.ReLU(inplace=True),
+        nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=5, stride=2, padding=2, output_padding=1),
+        nn.Tanh()
+    )
+
+
+def dc_Dis_BN_LR():
+    '''
+    Fixed implementation of DCGAN discriminator
+    LeakyRelu before Batchnorm
+    '''
+    return nn.Sequential(
+        nn.Conv2d(in_channels=3, out_channels=64, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(64),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=64, out_channels=128, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(128),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=128, out_channels=256, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(256),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=256, out_channels=512, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(512),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        mutils.Flatten(),
+        nn.Linear(512 * 4 * 4, 1),
+        nn.Sigmoid()
+    )
+
+    
 def dc_Gen_R_BN():
     '''
     Fixed implementation of DCGAN generator
@@ -56,9 +105,7 @@ def dc_Dis_LR_BN():
 
 def dc_Gen_IN_R():
     '''
-    Fixed implementation of DCGAN generator
-    Relu after InstanceNorm
-    Structure reference: https://arxiv.org/abs/1511.06434
+    Seems not work well
     '''
     return nn.Sequential(
         nn.Linear(100, 1024 * 4 * 4),
@@ -81,8 +128,7 @@ def dc_Gen_IN_R():
 
 def dc_Dis_IN_LR():
     '''
-    Fixed implementation of DCGAN discriminator
-    LeakyRelu after InstanceNorm
+    Seems not work well
     '''
     return nn.Sequential(
         nn.Conv2d(in_channels=3, out_channels=64, kernel_size=5, stride=2, padding=2),
