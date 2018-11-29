@@ -299,6 +299,8 @@ class BaseGAN():
             print('Continue training from checkpoint ' + ckp_route)
             self.load_model(ckp_route)
             print('Ckeckpoint loaded successfully.')
+        else:
+            print('Train from zero.')
 
         # check settings, use default if something is not set
         if not self.isinit:
