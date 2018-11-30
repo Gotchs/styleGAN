@@ -8,7 +8,7 @@ import utils.module_utils as mutils
 def dc_Gen_BN_R():
     '''
     Fixed implementation of DCGAN generator
-    Relu before Batchnorm
+    Relu after Batchnorm
     Structure reference: https://arxiv.org/abs/1511.06434
     '''
     return nn.Sequential(
@@ -33,7 +33,7 @@ def dc_Gen_BN_R():
 def dc_Dis_BN_LR():
     '''
     Fixed implementation of DCGAN discriminator
-    LeakyRelu before Batchnorm
+    LeakyRelu after Batchnorm
     '''
     return nn.Sequential(
         nn.Conv2d(in_channels=3, out_channels=64, kernel_size=5, stride=2, padding=2),
@@ -149,9 +149,60 @@ def dc_Dis_IN_LR():
     )
 
 
-def ls_Gen_IN_R():
-    pass
+def ls_Gen_BN_R(ResGroup_size=2):
+    model = [nn.Linear(1024, 256 * 8 * 8),
+             nn.BatchNorm1d(256 * 8 * 8),
+             nn.ReLU(inplace=True),
+             mutils.Unflatten(-1, 256, 8, 8),
+             nn.ConvTranspose2d(in_channels=256, out_channels=256, kernel_size=3, stride=2, padding=1, output_padding=1),
+             nn.BatchNorm2d(256),
+             nn.ReLU(inplace=True)]
+
+    for i in range(ResGroup_size):
+        model.append(mutils.ResBlock_trans(in_channels=256, out_channels=256))
+
+    model += [nn.ConvTranspose2d(in_channels=256, out_channels=256, kernel_size=3, stride=2, padding=1, output_padding=1),
+              nn.BatchNorm2d(256),
+              nn.ReLU(inplace=True)]
+
+    for i in range(ResGroup_size):
+        model.append(mutils.ResBlock_trans(in_channels=256, out_channels=256))
+
+    model += [nn.ConvTranspose2d(in_channels=256, out_channels=128, kernel_size=3, stride=2, padding=1, output_padding=1),
+              nn.BatchNorm2d(128),
+              nn.ReLU(inplace=True)]
+
+    for i in range(ResGroup_size):
+        model.append(mutils.ResBlock_trans(in_channels=128, out_channels=128))
+
+    model += [nn.ConvTranspose2d(in_channels=128, out_channels=64, kernel_size=3, stride=2, padding=1, output_padding=1),
+              nn.BatchNorm2d(64),
+              nn.ReLU(inplace=True)]
+
+    for i in range(ResGroup_size):
+        model.append(mutils.ResBlock_trans(in_channels=64, out_channels=64))
+
+    model += [nn.ConvTranspose2d(in_channels=64, out_channels=3, kernel_size=3, stride=1, padding=1),
+              nn.Tanh()]
+
+    return nn.Sequential(*model)
 
 
-def ls_Dis_IN_LR():
-    pass
+def ls_Dis_BN_LR():
+    return nn.Sequential(
+        nn.Conv2d(in_channels=3, out_channels=64, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(64),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=64, out_channels=128, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(128),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=128, out_channels=256, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(256),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        nn.Conv2d(in_channels=256, out_channels=512, kernel_size=5, stride=2, padding=2),
+        nn.BatchNorm2d(512),
+        nn.LeakyReLU(negative_slope=0.2, inplace=True),
+        mutils.Flatten(),
+        nn.Linear(512 * 8 * 8, 1),
+        nn.Sigmoid()
+    )

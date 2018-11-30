@@ -16,7 +16,7 @@ import utils.vis_utils as vutils
 
 class BaseGAN():
 
-    def __init__(self, useGPU=True, image_size, noise_dim):
+    def __init__(self, image_size, noise_dim, useGPU=True):
 
         # set model to GPU or CPU, default GPU
         if useGPU and torch.cuda.is_available():
@@ -299,6 +299,8 @@ class BaseGAN():
             print('Continue training from checkpoint ' + ckp_route)
             self.load_model(ckp_route)
             print('Ckeckpoint loaded successfully.')
+        else:
+            print('Train from zero.')
 
         # check settings, use default if something is not set
         if not self.isinit:
