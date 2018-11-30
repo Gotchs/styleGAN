@@ -1,3 +1,4 @@
+import torch
 from .baseGAN import BaseGAN
 from . import fixed_networks as fnets
 from torch.nn import init
