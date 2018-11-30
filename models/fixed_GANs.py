@@ -1,5 +1,6 @@
 from .baseGAN import BaseGAN
-from . import fixed_networks as fnet
+from . import fixed_networks as fnets
+from torch.nn import init
 
 ##############
 # classes
@@ -8,7 +9,7 @@ from . import fixed_networks as fnet
 class fixed_DCGAN(BaseGAN):
 
     def __init__(self, useGPU=True):
-        super(fixed_DCGAN, self).__init__(useGPU, 64, 100)
+        super(fixed_DCGAN, self).__init__(64, 100, useGPU)
 
 
     def get_networks(self, net_type='BN_R'):
@@ -32,7 +33,7 @@ class fixed_DCGAN(BaseGAN):
 class LSGAN_Res(BaseGAN):
 
     def __init__(self, useGPU=True):
-        super(LSGAN_Res, super).__init__(useGPU, 128, 1024)
+        super(LSGAN_Res, self).__init__(128, 1024, useGPU)
 
 
     def get_networks(self, net_type='BN_R', ResGroup_size=2):

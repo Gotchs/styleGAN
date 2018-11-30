@@ -39,13 +39,13 @@ class Unflatten(nn.Module):
 
 class ResBlock_trans(nn.Module):
 
-    def __init__(self, in_channals, out_channals, stride=1):
+    def __init__(self, in_channels, out_channels, stride=1):
         super(ResBlock_trans, self).__init__()
-        self.ConvTrans1 = ConvTranspose3x3(in_channals, out_channals, stride)
-        self.BN1 = nn.BatchNorm2d(out_channals)
+        self.ConvTrans1 = ConvTranspose3x3(in_channels, out_channels, stride)
+        self.BN1 = nn.BatchNorm2d(out_channels)
         self.ReLU = nn.ReLU(inplace=True)
-        self.ConvTrans2 = ConvTranspose3x3(out_channals, out_channals)
-        self.BN2 = nn.BatchNorm2d(out_channals)
+        self.ConvTrans2 = ConvTranspose3x3(out_channels, out_channels)
+        self.BN2 = nn.BatchNorm2d(out_channels)
         self.stride = stride
 
 

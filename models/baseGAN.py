@@ -16,7 +16,7 @@ import utils.vis_utils as vutils
 
 class BaseGAN():
 
-    def __init__(self, useGPU=True, image_size, noise_dim):
+    def __init__(self, image_size, noise_dim, useGPU=True):
 
         # set model to GPU or CPU, default GPU
         if useGPU and torch.cuda.is_available():

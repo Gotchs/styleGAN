@@ -1,5 +1,5 @@
 import argparse
-from models.fixed_GANs import fixed_DCGAN
+from models.fixed_GANs import LSGAN_Res
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
