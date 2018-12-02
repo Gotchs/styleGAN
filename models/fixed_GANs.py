@@ -1,6 +1,6 @@
 import torch
 from .baseGAN import BaseGAN
-from . import fixed_networks as fnets
+from . import fixed_networks as fnet
 from torch.nn import init
 
 ##############
@@ -26,6 +26,21 @@ class fixed_DCGAN(BaseGAN):
         elif net_type == 'IN_R':
             self.G = fnet.dc_Gen_IN_R().type(self.type)
             self.D = fnet.dc_Dis_IN_LR().type(self.type)
+        else:
+            raise NotImplementedError('Net type [%s] is not implemented' % net_type)
+        self.net_type = net_type
+
+
+class fixed_LSGAN(BaseGAN):
+
+    def __init__(self, useGPU=True):
+        super(fixed_LSGAN, self).__init__(112, 1024, useGPU)
+
+    def get_networks(self, net_type='BN_R'):
+
+        if net_type == 'BN_R':
+            self.G = fnet.lsv_Gen_BN_R().type(self.type)
+            self.D = fnet.lsv_Dis_BN_LR().type(self.type)
         else:
             raise NotImplementedError('Net type [%s] is not implemented' % net_type)
         self.net_type = net_type
