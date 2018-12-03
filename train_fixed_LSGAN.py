@@ -31,7 +31,7 @@ opt = parser.parse_args()
 if __name__ == '__main__':
 
     if opt.ckp_route is not None:
-        net = fixed_DCGAN(opt.cpu)
+        net = fixed_LSGAN(opt.cpu)
         net.train(ckp_route=opt.ckp_route, 
                   num_epochs=opt.epoch, show_every=opt.show_every, threshold_D=opt.threshold_D,
                   lr_decay_every=opt.lr_decay_every, G_decay=opt.G_decay, D_decay=opt.D_decay,
