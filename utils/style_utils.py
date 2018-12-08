@@ -8,6 +8,8 @@ import PIL
 
 import numpy as np
 
+from .gan_utils import deprocess_img
+
 SQUEEZENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 SQUEEZENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
@@ -21,9 +23,9 @@ def style_target_preprocess(style_target, size=512, batchsize=128):
     ])
     return transform(style_target)
 
-def fake_image_preprocess(fake_image, dtype):
-    mean = torch.tensor(SQUEEZENET_MEAN.reshape((1, 3, 1, 1))).type(dtype)
-    std = torch.tensor(SQUEEZENET_STD.reshape((1, 3, 1, 1))).type(dtype)
+def fake_image_preprocess(fake_image):
+    mean = torch.tensor(SQUEEZENET_MEAN.reshape((1, 3, 1, 1))).type(fake_image.type())
+    std = torch.tensor(SQUEEZENET_STD.reshape((1, 3, 1, 1))).type(fake_image.type())
     return (deprocess_img(fake_image) - mean) / std
 
 def deprocess(img):
