@@ -2,6 +2,7 @@ import argparse
 from models.fixed_GANs import fixed_LSGAN
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--default', action='store_true', help='Train from zero using default training strategy.')
 parser.add_argument('-p', '--ckp_route', type=str, default=None, help='Route of checkpoint file.')
 parser.add_argument('-c', '--cpu', action='store_false', help='Using CPU for training. (Not recommend)')
 parser.add_argument('--net_type', type=str, default='BN_R', help='Net type to use. Default: BN_R')
@@ -29,7 +30,9 @@ parser.add_argument('--figure_route', type=str, default='./savefigs/', help='Rou
 opt = parser.parse_args()
 
 if __name__ == '__main__':
-
+    if opt.default:
+        net = fixed_LSGAN()
+        net.train()
     if opt.ckp_route is not None:
         net = fixed_LSGAN(opt.cpu)
         net.train(ckp_route=opt.ckp_route, 
