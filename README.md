@@ -47,6 +47,10 @@ cd ./styleGAN
 
 - Make sure you have all prerequisites ready
 
+### Style Transfer
+
+Pretrained models and Jupyter Notebooks are provided for our fine-tuning process. You can play with them without downloading datasets. If you would like to reproduce the whole work, please read the sections below.
+
 ### Prepare datasets
 
 In our work, we use *church-outdoor* class of [LSUN](http://lsun.cs.princeton.edu/2017/) dataset for GAN training. Please refer to their [README](https://github.com/fyu/lsun/blob/master/README.md) file for downloading. Finally, you should have a folder named *church_outdoor_train_lmdb* under ./datasets/LSUN/. You can also implement your own datasets, but this may lead to some works on the source codes.
@@ -66,8 +70,4 @@ python3 train_fixed_LSGAN.py -d
 ```
 
 By using *-d* argument, you will run a training under our default settings. If you would like to set you own hyperparameters, use argument *-h* for help, or read and modify source codes directly.
-
-### Style Transfer
-
-Pretrained models and two Jupyter Notebooks are provide for the fine-tuning process. You can just run the notebooks to see what will happen.
 
