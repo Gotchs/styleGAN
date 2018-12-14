@@ -26,7 +26,8 @@ This repository is built for the paper [StyleGAN: Large Scale Style Transfer Usi
 - *images* ------ images for this README
 - *models* ------ codes for building our models
 - *paper* ------ a copy of our paper
-- *savemodels* ------ two pretrained GANs are provided here
+- *savefigs* ------ HD images generated from demo notebooks will be saved here
+- *savemodels* ------ two pretrained generators are provided here
 - *styles* ------ images for style transfer
 - *utils* ------ codes for data processing, visualization, and small modules
 - *Generator_layer_understanding.ipynb* ------ notebook for reproducing our layer analysis
