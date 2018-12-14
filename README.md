@@ -1,6 +1,6 @@
 # StyleGAN: Large Scale Style Transfer Using Generative Adversarial Networks
 
-This repository built for the paper [StyleGAN: Large Scale Style Transfer Using Generative Adversarial Networks](https://github.com/dashidhy/styleGAN/blob/master/paper/StyleGAN.pdf). Please refer to it for more details.
+This repository is built for the paper [StyleGAN: Large Scale Style Transfer Using Generative Adversarial Networks](https://github.com/dashidhy/styleGAN/blob/master/paper/StyleGAN.pdf). Please refer to it for more details.
 
 <div align='center'>
   <img src='https://github.com/dashidhy/styleGAN/raw/master/images/candy_112.jpg?sanitize=true' height="350px">
