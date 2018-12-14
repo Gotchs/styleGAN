@@ -58,9 +58,9 @@ To train a 112x112 LSGAN, run:
 python3 train_fixed_LSGAN.py -d
 ```
 
-By using -d argument, you will run a training under our default settings. If you would like to set you own hyperparameters, use argument -h for help, or read source codes directly.
+By using *-d* argument, you will run a training under our default settings. If you would like to set you own hyperparameters, use argument *-h* for help, or read and modify source codes directly.
 
 ### Style Transfer
 
-Pretrained models and two Jupyter Notebooks are provide for the fine-tuning process. You can just run the notebooks to see what will happen
+Pretrained models and two Jupyter Notebooks are provide for the fine-tuning process. You can just run the notebooks to see what will happen.
 
