@@ -30,7 +30,7 @@ This repository is built for the paper [StyleGAN: Large Scale Style Transfer Usi
 - *styles* ------ images for style transfer
 - *utils* ------ codes for data processing, visualization, and small modules
 - *Generator_layer_understanding.ipynb* ------ notebook for reproducing our layer analysis
-- *StyleGAN_training.ipynb* ------ notebook for reproduce our fine-tuning process
+- *StyleGAN_training.ipynb* ------ notebook for reproducing our fine-tuning process
 - *train_fixed_DCGAN.py* ------ script for training a 64x64 DCGAN
 - *train_fixed_LSGAN.py* ------ script for training a 112x112 LSGAN
 
